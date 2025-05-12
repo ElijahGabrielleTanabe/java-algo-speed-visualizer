@@ -3,3 +3,5 @@ com\github\elijahgabrielletanabe\AlgorithmBase.class
 com\github\elijahgabrielletanabe\App.class
 module-info.class
 com\github\elijahgabrielletanabe\Algorithms\BubbleSort.class
+com\github\elijahgabrielletanabe\Algorithms\MergeSort.class
+com\github\elijahgabrielletanabe\Algorithms\QuickSort.class
