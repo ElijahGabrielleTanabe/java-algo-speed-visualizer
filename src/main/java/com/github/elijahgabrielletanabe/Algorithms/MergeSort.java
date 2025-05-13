@@ -9,4 +9,10 @@ public class MergeSort extends AlgorithmBase
     {
         return "MergeSort";
     }
+
+    @Override
+    public void experiment() 
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

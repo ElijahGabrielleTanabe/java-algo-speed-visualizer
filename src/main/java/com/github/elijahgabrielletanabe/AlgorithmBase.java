@@ -9,6 +9,8 @@ public abstract class AlgorithmBase
         this.iterations = 0;
     }
 
+    public abstract void experiment();
+
     @Override
     public abstract String toString();
 }

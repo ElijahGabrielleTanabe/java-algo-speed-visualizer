@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javafx.collections.ObservableListBase;
 
+//Visible list
 public class AlgorithmList <T> extends ObservableListBase<T>
 {
     private final ArrayList<T> al;
@@ -24,6 +25,14 @@ public class AlgorithmList <T> extends ObservableListBase<T>
         al.add(a);
         nextAdd(al.size() - 1, al.size());
         endChange();
+    }
+
+    public void addAllItems(T ... a)
+    {
+        for (T ab : a)
+        {
+            this.addItem(ab);
+        }
     }
 
     public void removeItem(int i)

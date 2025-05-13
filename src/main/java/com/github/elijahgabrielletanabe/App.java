@@ -1,28 +1,29 @@
 package com.github.elijahgabrielletanabe;
 
 import java.io.IOException;
+import java.net.URL;
 
 import com.github.elijahgabrielletanabe.Algorithms.BubbleSort;
+import com.github.elijahgabrielletanabe.Algorithms.MergeSort;
+import com.github.elijahgabrielletanabe.Algorithms.QuickSort;
 
 import javafx.application.Application;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.Node;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 
 /**
  * JavaFX App
@@ -36,44 +37,45 @@ public class App extends Application {
     {
         BorderPane root = new BorderPane();
   
-        VBox sortList = createSortList();
+        VBox leftPanel = createLeftPanel();
         LineChart<Integer, Integer> lc = createAlgoGraph();
-        VBox stats = createStatsBox();
-        HBox top = new HBox();
-        HBox bottom = new HBox();
+        //VBox stats = createStatsBox();
 
-        top.setBackground(new Background(new BackgroundFill(
-            Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY
-        )));
-        top.setPrefHeight(60);
-        bottom.setBackground(new Background(new BackgroundFill(
-            Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY
-        )));
-        bottom.setPrefHeight(60);
-
-        root.setLeft(sortList);
+        root.setLeft(leftPanel);
         root.setCenter(lc);
-        root.setRight(stats);
-        root.setTop(top);
-        root.setBottom(bottom);
+        //root.setRight(stats);
         //BorderPane.setAlignment(center, Pos.CENTER);
 
         return root;
     }
 
-    private VBox createSortList()
+    private VBox createLeftPanel()
     {
-        VBox sortList = new VBox();
-        sortList.getStyleClass().add("vbox");
-        sortList.getStylesheets().add(getCssString("SortList.css"));
+        VBox leftPanel = new VBox();
+        leftPanel.getStyleClass().add("vbox");
+        //leftPanel.getStylesheets().add(getFileByString("LeftPanel.css"));
 
-        AlgorithmList<AlgorithmBase> ab = new AlgorithmList<>();
-        ab.addItem(new BubbleSort());
+        AlgorithmList<AlgorithmBase> al = new AlgorithmList<>();
+        al.addAllItems(
+            new BubbleSort(),
+            new MergeSort(),
+            new QuickSort()
+        );
 
-        ChoiceBox<AlgorithmBase> cb = new ChoiceBox<>(ab);
-        sortList.getChildren().add(cb);
+        ListView<AlgorithmBase> lv = new ListView<>();
+        lv.setItems(al);
 
-        return sortList;
+        Button run = new Button("Run");
+
+        VBox buttonContainer = new VBox(run);
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.setBackground(new Background(new BackgroundFill(
+            Color.RED, CornerRadii.EMPTY, Insets.EMPTY
+        )));
+
+        leftPanel.getChildren().addAll(lv, buttonContainer);
+
+        return leftPanel;
     }
 
     private LineChart createAlgoGraph()
@@ -85,25 +87,29 @@ public class App extends Application {
         yAxis.setLabel("Time in Milliseconds");
 
         LineChart<Integer, Integer> lc = new LineChart(xAxis, yAxis);
-        lc.getStylesheets().add(getCssString("LineChart.css"));
+        //lc.getStylesheets().add(getFileByString("LineChart.css"));
 
         return lc;
     }
 
+    /* 
     private VBox createStatsBox()
     {
         VBox stats = new VBox();
         stats.getStyleClass().add("vbox");
-        stats.getStylesheets().add(getCssString("Stats.css"));
+        stats.getStylesheets().add(getFileByString("Stats.css"));
 
         return stats;
     }
+    */
 
     @Override
     public void start(Stage stage) throws IOException 
     {
-        scene = new Scene(createContent(), 1100, 650);
-        scene.getStylesheets().add(getCssString("App.css"));
+        //scene = new Scene(createContent(), 1100, 650);
+        //scene.getStylesheets().add(getFileByString("App.css", "css").toExternalForm());
+
+        scene = new Scene(FXMLLoader.load(getFileByString("sample.fxml", "fxml")));
 
         stage.setResizable(false);
         stage.setScene(scene);
@@ -115,9 +121,9 @@ public class App extends Application {
         launch();
     }
 
-    private String getCssString(String path)
+    private URL getFileByString(String path, String type)
     {
-        return this.getClass().getResource(path).toExternalForm();
+        return this.getClass().getResource(type + "/" + path);
     }
 
 }

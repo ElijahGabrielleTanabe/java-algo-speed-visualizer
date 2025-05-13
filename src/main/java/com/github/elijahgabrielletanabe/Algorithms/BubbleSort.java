@@ -9,4 +9,10 @@ public class BubbleSort extends AlgorithmBase
     {
         return "BubbleSort";
     }
+
+    @Override
+    public void experiment() 
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

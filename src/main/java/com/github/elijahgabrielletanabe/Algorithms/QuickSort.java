@@ -9,4 +9,10 @@ public class QuickSort extends AlgorithmBase
     {
         return "QuickSort";
     }
+
+    @Override
+    public void experiment() 
+    {
+        throw new UnsupportedOperationException("Unimplemented method 'experiment'");
+    }
 }
