@@ -1,4 +1,4 @@
-.vbox {
-    -fx-background-color: #0000FF;
+.sort-button {
     -fx-pref-width: 200px;
+    -fx-pref-height: 50px;
 }
