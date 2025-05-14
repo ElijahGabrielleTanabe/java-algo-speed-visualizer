@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,8 +12,10 @@ import java.util.stream.Stream;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -34,11 +37,13 @@ public class Controller implements Initializable
     @FXML private CategoryAxis x;
     @FXML private NumberAxis y;
 
-    private ArrayList<AlgorithmBase> ab;
+    private HashMap<String, AlgorithmBase> algoList;
+    private HashMap<String, SortButtonEvent> eventHandlers;
 
     public Controller()
     {
-        this.ab = new ArrayList<>();
+        this.algoList = new HashMap<>();
+        this.eventHandlers = new HashMap<>();
     }
 
     @Override
@@ -54,11 +59,18 @@ public class Controller implements Initializable
         VBox.setVgrow(sortListContainer, Priority.ALWAYS);
         sortList.setPrefHeight(Region.USE_COMPUTED_SIZE);
 
-        for (AlgorithmBase algo : ab)
+        for (String key : algoList.keySet())
         {
-            Button button = new Button(algo.toString());
+            //# Set up Button
+            Button button = new Button(key);
             button.getStyleClass().add("sort-button");
             VBox.setVgrow(button, Priority.ALWAYS);
+
+            //# Add and Store Event Handler
+            SortButtonEvent ae = new SortButtonEvent();
+            button.setOnAction(ae);
+            eventHandlers.put(key, ae);
+
             sortList.getChildren().add(button);
         }
         
@@ -83,18 +95,19 @@ public class Controller implements Initializable
     }
 
     @FXML
-    public void queueSort(MouseEvent event)
-    {
-        if (event.getSource() == "aButtonfrfr")
-        {
-            System.out.println("Ayeee!");
-        }
-    }
-
-    @FXML
     public void runTest(MouseEvent event) 
     {
+        for (Node n : sortList.getChildren())
+        {
+            if (!(n instanceof Button)) { throw new IllegalArgumentException("Not a Button"); }
 
+            Button b = (Button) n;
+
+            if (eventHandlers.get(b.getText()).isSelected())
+            {
+                System.out.println("This button was selected: " + b.getText());
+            }
+        }
     }
 
     private URL getFileByString(String path, String type)
@@ -121,9 +134,9 @@ public class Controller implements Initializable
                 Constructor<?> cons = clazz.getConstructor();
                 Object a = cons.newInstance();
 
-                this.ab.add((AlgorithmBase) a);
-            } 
-            catch (Exception e) 
+                this.algoList.put(file, (AlgorithmBase) a);
+            }
+            catch (Exception e)
             {
                 System.out.println("Failed to load class: " + file);
                 e.printStackTrace();
