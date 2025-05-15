@@ -4,18 +4,19 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
+import javafx.scene.Cursor;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -29,7 +30,7 @@ import javafx.scene.layout.VBox;
 
 public class Controller implements Initializable
 {
-    @FXML private LineChart<String, Double> lineChart;
+    @FXML private LineChart<String, Long> lineChart;
 
     @FXML private VBox sortList;
     @FXML private ScrollPane sortListContainer;
@@ -37,13 +38,15 @@ public class Controller implements Initializable
     @FXML private CategoryAxis x;
     @FXML private NumberAxis y;
 
-    private HashMap<String, AlgorithmBase> algoList;
-    private HashMap<String, SortButtonEvent> eventHandlers;
+    private final HashMap<String, AlgorithmBase> algoList;
+    private final ArrayList<AlgorithmBase> queueList;
+    private final ObservableList<String> sortSizes;
 
     public Controller()
     {
         this.algoList = new HashMap<>();
-        this.eventHandlers = new HashMap<>();
+        this.queueList = new ArrayList<>();
+        this.sortSizes = FXCollections.observableList(new ArrayList<>());
     }
 
     @Override
@@ -56,6 +59,7 @@ public class Controller implements Initializable
 
         //# Populate SortList
         sortListContainer.getStylesheets().add(getFileByString("LeftPanel.css", "css").toExternalForm());
+        sortList.getStyleClass().add("vbox");
         VBox.setVgrow(sortListContainer, Priority.ALWAYS);
         sortList.setPrefHeight(Region.USE_COMPUTED_SIZE);
 
@@ -64,55 +68,108 @@ public class Controller implements Initializable
             //# Set up Button
             Button button = new Button(key);
             button.getStyleClass().add("sort-button");
+            button.setCursor(Cursor.HAND);
             VBox.setVgrow(button, Priority.ALWAYS);
 
-            //# Add and Store Event Handler
-            SortButtonEvent ae = new SortButtonEvent();
+            //# Add Event Handler
+            SortButtonEvent ae = new SortButtonEvent(this.queueList, algoList.get(key));
             button.setOnAction(ae);
-            eventHandlers.put(key, ae);
 
             sortList.getChildren().add(button);
         }
-        
-        //# Testing data
-        XYChart.Series<String, Double> series = new XYChart.Series<>();
-        series.setName("Some Sort");
-        
-        series.getData().add(new XYChart.Data<>("100", 20D));
-        series.getData().add(new XYChart.Data<>("500", 200D));
-        series.getData().add(new XYChart.Data<>("1000", 330D));
-        series.getData().add(new XYChart.Data<>("5000", 420D));
-        series.getData().add(new XYChart.Data<>("10000", 550D));
 
         //# Have user specify sort sizes, into arraylist for usage in tests and GUI
-        ObservableList<String> sortSizes =  FXCollections.observableList(new ArrayList<>());
+ 
         // Default sort size values
-        sortSizes.addAll(new String[]{"100", "500", "1000", "5000", "10000"});
+        this.sortSizes.addAll(new String[]{"100", "500", "1000", "5000", "10000"});
 
-        x.setCategories(sortSizes);
-
-        lineChart.getData().addAll(series);
+        this.x.setCategories(sortSizes);
     }
 
     @FXML
-    public void runTest(MouseEvent event) 
+    //For loops galore
+    public void runTest(MouseEvent event) throws InterruptedException 
     {
-        for (Node n : sortList.getChildren())
+        Button button = (Button) event.getSource();
+        button.setDisable(true);
+
+        ArrayList<Thread> spawnedThreads = new ArrayList<>();
+
+        if (this.queueList.isEmpty())
         {
-            if (!(n instanceof Button)) { throw new IllegalArgumentException("Not a Button"); }
-
-            Button b = (Button) n;
-
-            if (eventHandlers.get(b.getText()).isSelected())
-            {
-                System.out.println("This button was selected: " + b.getText());
-            }
+            button.setDisable(false);
+            return;
         }
-    }
 
-    private URL getFileByString(String path, String type)
-    {
-        return this.getClass().getResource(type + "/" + path);
+        //# Clear all XYSeries on the chart
+        this.lineChart.getData().clear();
+
+        Thread side = new Thread(() -> {
+
+            for (String s : this.sortSizes)
+            {
+                System.out.println("Sort Size: " + s);
+
+                int sortSize = Integer.parseInt(s);
+
+                //# Generate array to sort
+                ArrayList<Integer> toSort = new ArrayList<>();
+
+                for (int i = 0; i < sortSize; i++)
+                {
+                    toSort.add(i);
+                }
+
+                Collections.shuffle(toSort);
+
+                for (AlgorithmBase ab : this.queueList)
+                {
+                    //# Run experiment with worker thread
+                    Thread t = new Thread(() -> {
+                        System.out.println("Executing task on: " + Thread.currentThread().getName());
+
+                        //# Update later
+                        ab.experiment(toSort, sortSize);
+                    });
+
+                    t.start();
+                    spawnedThreads.add(t);
+                }
+
+                for (Thread thread : spawnedThreads)
+                {
+                    try {
+                        thread.join();
+                    } catch (InterruptedException e) {
+                        System.out.println("Interrupted Thread: " + thread.getName());
+                    }
+                }
+                spawnedThreads.clear();
+            }
+
+            System.out.println("\tReached!");
+
+            Platform.runLater(() -> {
+                for (AlgorithmBase ab : queueList)
+                {
+                    XYChart.Series<String, Long> cs = new XYChart.Series<>();
+                    cs.setName(ab.toString());
+
+                    for (XYChart.Data<String, Long> cd : ab.getDataList())
+                    {
+                        cs.getData().add(new XYChart.Data<>(cd.getXValue(), cd.getYValue()));
+                    }
+
+                    ab.clearDataList();
+
+                    this.lineChart.getData().add(cs);
+                }
+                
+                button.setDisable(false);
+            });
+        });
+
+        side.start();
     }
 
     public void loadAlgorithms()
@@ -142,5 +199,10 @@ public class Controller implements Initializable
                 e.printStackTrace();
             }
         }
+    }
+
+    private URL getFileByString(String path, String type)
+    {
+        return this.getClass().getResource(type + "/" + path);
     }
 }

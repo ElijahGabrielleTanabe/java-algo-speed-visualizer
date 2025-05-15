@@ -1,5 +1,49 @@
+.scroll-pane {
+    -fx-background: #f2f2f2; /* Light background */
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 5;
+}
+
+.scroll-pane .vbox {
+    -fx-spacing: 6px;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent; /* Removes inner white box */
+}
+
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #909090;
+    -fx-background-insets: 2;
+    -fx-background-radius: 4;
+}
+
 /* Style later */
 .sort-button {
-    -fx-pref-width: 200px;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5px;
+    -fx-font-size: 14px;
+    -fx-font-family: "Lucida Console";
+    -fx-border-radius: 3px;
+    -fx-border-color: #dedede;
+    -fx-border-width: 1px;
+    -fx-pref-width: 190px;
     -fx-pref-height: 50px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 0, 0, 0, 3);
+}
+
+.sort-button:hover {
+    -fx-background-color: #e8e8e8;
+}
+
+.sort-button:pressed {
+    -fx-background-color: #cbcbcb;
+    -fx-translate-y: 1;
 }

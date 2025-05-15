@@ -6,6 +6,7 @@ import java.net.URL;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
@@ -23,6 +24,8 @@ public class App extends Application {
         scene.getStylesheets().add(getFileByString("App.css", "css").toExternalForm());
 
         stage.setResizable(false);
+        stage.setTitle("POOOWERRRRR!!!");
+        stage.getIcons().add(new Image(getFileByString("heremylarckson.jpg", "images").toExternalForm()));
         stage.setScene(scene);
         stage.show();
     }
@@ -32,9 +35,8 @@ public class App extends Application {
         launch();
     }
 
-    private URL getFileByString(String path, String type)
+    private URL getFileByString(String path, String folder)
     {
-        return this.getClass().getResource(type + "/" + path);
+        return this.getClass().getResource(folder + "/" + path);
     }
-
 }

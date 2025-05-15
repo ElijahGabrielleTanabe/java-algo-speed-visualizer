@@ -1,5 +1,7 @@
 package com.github.elijahgabrielletanabe.Algorithms;
 
+import java.util.ArrayList;
+
 import com.github.elijahgabrielletanabe.AlgorithmBase;
 
 public class QuickSort extends AlgorithmBase
@@ -11,8 +13,8 @@ public class QuickSort extends AlgorithmBase
     }
 
     @Override
-    public void experiment() 
+    protected <T> void sort(ArrayList<T> sort)
     {
-        throw new UnsupportedOperationException("Unimplemented method 'experiment'");
+        
     }
 }

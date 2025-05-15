@@ -1,8 +1,8 @@
-com\github\elijahgabrielletanabe\SortButtonEvent.class
 com\github\elijahgabrielletanabe\AlgorithmBase.class
-com\github\elijahgabrielletanabe\App.class
 com\github\elijahgabrielletanabe\Controller.class
-module-info.class
-com\github\elijahgabrielletanabe\Algorithms\BubbleSort.class
 com\github\elijahgabrielletanabe\Algorithms\MergeSort.class
 com\github\elijahgabrielletanabe\Algorithms\QuickSort.class
+com\github\elijahgabrielletanabe\SortButtonEvent.class
+com\github\elijahgabrielletanabe\App.class
+module-info.class
+com\github\elijahgabrielletanabe\Algorithms\BubbleSort.class
