@@ -7,14 +7,14 @@ import com.github.elijahgabrielletanabe.AlgorithmBase;
 public class MergeSort extends AlgorithmBase
 {
     @Override
-    public String toString()
+    protected <T extends Comparable<T>> void sort(ArrayList<T> sort)
     {
-        return "MergeSort";
+        
     }
 
     @Override
-    protected <T> void sort(ArrayList<T> sort)
+    public String toString()
     {
-        
+        return "MergeSort";
     }
 }

@@ -7,14 +7,14 @@ import com.github.elijahgabrielletanabe.AlgorithmBase;
 public class QuickSort extends AlgorithmBase
 {
     @Override
-    public String toString()
+    protected <T extends Comparable<T>> void sort(ArrayList<T> sort)
     {
-        return "QuickSort";
+        
     }
 
     @Override
-    protected <T> void sort(ArrayList<T> sort)
+    public String toString()
     {
-        
+        return "QuickSort";
     }
 }

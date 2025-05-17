@@ -2,6 +2,7 @@ package com.github.elijahgabrielletanabe;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,8 +23,10 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -31,12 +34,17 @@ import javafx.scene.layout.VBox;
 public class Controller implements Initializable
 {
     @FXML private LineChart<String, Long> lineChart;
-
-    @FXML private VBox sortList;
+    
+    @FXML private AnchorPane sortPanel;
+    @FXML private VBox statsPanel;
     @FXML private ScrollPane sortListContainer;
+    @FXML private VBox statsContainer;
+    @FXML private VBox sortList;
 
     @FXML private CategoryAxis x;
     @FXML private NumberAxis y;
+    @FXML private Label statTitle;
+    @FXML private Button runButton;
 
     private final HashMap<String, AlgorithmBase> algoList;
     private final ArrayList<AlgorithmBase> queueList;
@@ -54,14 +62,24 @@ public class Controller implements Initializable
     {
         System.out.println("Running!");
 
+        //# Apply Css to parent containers
+        this.sortPanel.getStylesheets().add(getFileByString("LeftPanel.css", "css").toExternalForm());
+        this.lineChart.getStylesheets().add(getFileByString("LineChart.css", "css").toExternalForm());
+        this.statsPanel.getStylesheets().add(getFileByString("Stats.css", "css").toExternalForm());
+
+        //# Apply Css classes
+        this.sortList.getStyleClass().add("vbox");
+        this.statsPanel.getStyleClass().add("vbox");
+        this.statTitle.getStyleClass().add("stat-title");
+        this.statsContainer.getStyleClass().add("stats-container");
+        this.runButton.getStyleClass().add("run-button");
+
         //# Load algorithms
         loadAlgorithms();
 
         //# Populate SortList
-        sortListContainer.getStylesheets().add(getFileByString("LeftPanel.css", "css").toExternalForm());
-        sortList.getStyleClass().add("vbox");
         VBox.setVgrow(sortListContainer, Priority.ALWAYS);
-        sortList.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        this.sortList.setPrefHeight(Region.USE_COMPUTED_SIZE);
 
         for (String key : algoList.keySet())
         {
@@ -101,9 +119,6 @@ public class Controller implements Initializable
             return;
         }
 
-        //# Clear all XYSeries on the chart
-        this.lineChart.getData().clear();
-
         Thread side = new Thread(() -> {
 
             for (String s : this.sortSizes)
@@ -115,10 +130,7 @@ public class Controller implements Initializable
                 //# Generate array to sort
                 ArrayList<Integer> toSort = new ArrayList<>();
 
-                for (int i = 0; i < sortSize; i++)
-                {
-                    toSort.add(i);
-                }
+                for (int i = 0; i < sortSize; i++) { toSort.add(i); }
 
                 Collections.shuffle(toSort);
 
@@ -126,6 +138,7 @@ public class Controller implements Initializable
                 {
                     //# Run experiment with worker thread
                     Thread t = new Thread(() -> {
+                        
                         System.out.println("Executing task on: " + Thread.currentThread().getName());
 
                         //# Update later
@@ -150,26 +163,53 @@ public class Controller implements Initializable
             System.out.println("\tReached!");
 
             Platform.runLater(() -> {
-                for (AlgorithmBase ab : queueList)
-                {
-                    XYChart.Series<String, Long> cs = new XYChart.Series<>();
-                    cs.setName(ab.toString());
-
-                    for (XYChart.Data<String, Long> cd : ab.getDataList())
-                    {
-                        cs.getData().add(new XYChart.Data<>(cd.getXValue(), cd.getYValue()));
-                    }
-
-                    ab.clearDataList();
-
-                    this.lineChart.getData().add(cs);
-                }
-                
+                displayData();
                 button.setDisable(false);
             });
         });
 
         side.start();
+    }
+
+    private void displayData()
+    {
+        //# Clear all XYSeries on the chart
+        this.lineChart.getData().clear();
+        //# Clear all stats in stats panel
+        this.statsContainer.getChildren().clear();
+
+        for (AlgorithmBase ab : queueList)
+        {
+            //# Line Chart Data
+            XYChart.Series<String, Long> cs = new XYChart.Series<>();
+            cs.setName(ab.toString());
+
+            for (XYChart.Data<String, Long> cd : ab.getDataList())
+            {
+                cs.getData().add(new XYChart.Data<>(cd.getXValue(), cd.getYValue()));
+            }
+
+            ArrayList<Long> computeTimes = ab.getComputeTimes();
+            Collections.sort(computeTimes);
+
+            //# Stat Pane Data
+            VBox statCard = new VBox();
+            Label algorithm = new Label("Algorithm: " + ab.toString());
+            Label maxTime = new Label("Fastest: " + computeTimes.get(computeTimes.size() - 1).toString() + " ms");
+            Label minTime = new Label("Slowest: " + computeTimes.get(0).toString() + " ms");
+            Label iterations = new Label("Iterations: " + Integer.toString(ab.getIterations()));
+            Label timeComplexity = new Label("Time Complexity: " + ab.getTimeComplexity());
+
+            statCard.getStyleClass().add("stat-card");
+            statCard.getChildren().addAll(algorithm, maxTime, minTime, iterations, timeComplexity);
+            this.statsContainer.getChildren().add(statCard);
+
+            ab.clearDataList();
+            ab.clearComputeTimes();
+            ab.setIterations(0);
+
+            this.lineChart.getData().add(cs);
+        }
     }
 
     public void loadAlgorithms()
@@ -189,14 +229,23 @@ public class Controller implements Initializable
 
                 Class<?> clazz = Class.forName("com.github.elijahgabrielletanabe.Algorithms." + file);
                 Constructor<?> cons = clazz.getConstructor();
-                Object a = cons.newInstance();
+                
+                try
+                {
+                    Object a = cons.newInstance();
+                    this.algoList.put(file, (AlgorithmBase) a);
+                } catch (InstantiationException e) {
+                    System.out.println("Could not instantiate: " + file);
+                } catch (IllegalAccessException e) {
+                    System.out.println("Could not access: " + file);
+                } catch (InvocationTargetException e) {
+                    System.out.println("Constructor Exception: " + e.getCause().getMessage());
+                }
 
-                this.algoList.put(file, (AlgorithmBase) a);
-            }
-            catch (Exception e)
-            {
-                System.out.println("Failed to load class: " + file);
-                e.printStackTrace();
+            } catch (ClassNotFoundException e) { 
+                System.out.println("Could not find class: " + file);
+            } catch (NoSuchMethodException e) { 
+                System.out.println("Could not find constructor in: " + file); 
             }
         }
     }

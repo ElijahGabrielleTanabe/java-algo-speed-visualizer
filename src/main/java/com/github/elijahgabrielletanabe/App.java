@@ -20,7 +20,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException 
     {
-        scene = new Scene(FXMLLoader.load(getFileByString("sample.fxml", "fxml")));
+        scene = new Scene(FXMLLoader.load(getFileByString("App.fxml", "fxml")));
         scene.getStylesheets().add(getFileByString("App.css", "css").toExternalForm());
 
         stage.setResizable(false);

@@ -1,5 +1,8 @@
 .scroll-pane {
-    -fx-background: #f2f2f2; /* Light background */
+    -fx-background-color: transparent;
+    -fx-box-border: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
     -fx-border-color: #ccc;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
@@ -11,7 +14,7 @@
 }
 
 .scroll-pane .viewport {
-    -fx-background-color: transparent; /* Removes inner white box */
+    -fx-background-color: transparent;
 }
 
 .scroll-bar:vertical {
@@ -25,24 +28,34 @@
     -fx-background-radius: 4;
 }
 
+.run-button {
+    -fx-background-color: white;
+    -fx-background-radius: 2px;
+    -fx-border-radius: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.2, 0, 1);
+}
+
 /* Style later */
 .sort-button {
     -fx-background-color: #ffffff;
-    -fx-background-radius: 5px;
+    -fx-background-radius: 3px;
     -fx-font-size: 14px;
     -fx-font-family: "Lucida Console";
-    -fx-border-radius: 3px;
+    -fx-border-radius: 2px;
     -fx-border-color: #dedede;
     -fx-border-width: 1px;
+    -fx-box-border: transparent;
     -fx-pref-width: 190px;
     -fx-pref-height: 50px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 0, 0, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0.2, 0, 1);
 }
 
+.run-button:hover,
 .sort-button:hover {
     -fx-background-color: #e8e8e8;
 }
 
+.run-button:pressed,
 .sort-button:pressed {
     -fx-background-color: #cbcbcb;
     -fx-translate-y: 1;
