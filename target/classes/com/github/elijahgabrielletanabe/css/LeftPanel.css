@@ -19,8 +19,8 @@
 
 .scroll-bar:vertical {
     -fx-background-color: transparent;
+    -fx-pref-width: 8px;
 }
-
 
 .scroll-bar:vertical .thumb {
     -fx-background-color: #909090;
@@ -35,7 +35,6 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.2, 0, 1);
 }
 
-/* Style later */
 .sort-button {
     -fx-background-color: #ffffff;
     -fx-background-radius: 3px;

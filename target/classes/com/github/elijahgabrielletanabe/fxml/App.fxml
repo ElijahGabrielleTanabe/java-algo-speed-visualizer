@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.elijahgabrielletanabe.Controller">
+   <left>
+      <AnchorPane fx:id="sortPanel" prefHeight="400.0" prefWidth="137.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="runButton" layoutX="53.0" layoutY="518.0" mnemonicParsing="false" onMouseClicked="#runTest" prefHeight="38.0" prefWidth="97.0" text="Run">
+               <font>
+                  <Font name="Lucida Console" size="14.0" />
+               </font></Button>
+            <ScrollPane fx:id="sortListContainer" hbarPolicy="NEVER" layoutY="1.0" prefHeight="484.0" prefWidth="204.0" AnchorPane.leftAnchor="0.0">
+               <content>
+                  <VBox fx:id="sortList" prefWidth="200.0" />
+               </content>
+            </ScrollPane>
+         </children>
+      </AnchorPane>
+   </left>
+   <center>
+   </center>
+   <center>
+      <LineChart fx:id="lineChart" horizontalGridLinesVisible="false" prefHeight="600.0" prefWidth="813.0" BorderPane.alignment="CENTER">
+        <xAxis>
+          <CategoryAxis label="Sort Size" side="BOTTOM" fx:id="x" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis fx:id="y" autoRanging="false" label="Time in Milliseconds" side="LEFT" tickLabelGap="5.0" tickUnit="100.0" upperBound="600.0" />
+        </yAxis>
+      </LineChart>
+   </center>
+   <right>
+      <VBox fx:id="statsPanel" prefHeight="600.0" prefWidth="220.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="statTitle" alignment="CENTER" prefHeight="47.0" prefWidth="220.0" text="Stats">
+               <font>
+                  <Font name="Lucida Console" size="14.0" />
+               </font>
+            </Label>
+            <ScrollPane hbarPolicy="NEVER" prefHeight="542.0" prefWidth="220.0">
+               <content>
+                  <VBox fx:id="statsContainer" prefWidth="220.0" />
+               </content>
+            </ScrollPane>
+         </children>
+      </VBox>
+   </right>
+</BorderPane>

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.ResourceBundle;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -205,7 +206,7 @@ public class Controller implements Initializable
             Label maxTime = new Label("Fastest: " + computeTimes.get(computeTimes.size() - 1).toString() + " ms");
             Label minTime = new Label("Slowest: " + computeTimes.get(0).toString() + " ms");
             Label iterations = new Label("Iterations: " + Integer.toString(ab.getIterations()));
-            Label timeComplexity = new Label("Time Complexity: " + ab.getTimeComplexity());
+            Label timeComplexity = new Label("Complexity: " + ab.getTimeComplexity());
 
             statCard.getStyleClass().add("stat-card");
             statCard.getChildren().addAll(algorithm, maxTime, minTime, iterations, timeComplexity);
@@ -222,38 +223,9 @@ public class Controller implements Initializable
     public void loadAlgorithms()
     {
         //# Find all algorithm files
-        Set<String> files = Stream.of(new File("src/main/java/com/github/elijahgabrielletanabe/Algorithms").listFiles())
-        .filter(file -> !file.isDirectory())
-        .map(File::getName)
-        .collect(Collectors.toSet());
-
-        //# Load algorithms into an array
-        for (String file : files)
-        {
-            try
-            {
-                file = file.replace(".java", "");
-
-                Class<?> clazz = Class.forName("com.github.elijahgabrielletanabe.Algorithms." + file);
-                Constructor<?> cons = clazz.getConstructor();
-                
-                try
-                {
-                    Object a = cons.newInstance();
-                    this.algoList.put(file, (AlgorithmBase) a);
-                } catch (InstantiationException e) {
-                    System.out.println("Could not instantiate: " + file);
-                } catch (IllegalAccessException e) {
-                    System.out.println("Could not access: " + file);
-                } catch (InvocationTargetException e) {
-                    System.out.println("Constructor Exception: " + e.getCause().getMessage());
-                }
-
-            } catch (ClassNotFoundException e) { 
-                System.out.println("Could not find class: " + file);
-            } catch (NoSuchMethodException e) { 
-                System.out.println("Could not find constructor in: " + file); 
-            }
+        ServiceLoader<AlgorithmBase> loader = ServiceLoader.load(AlgorithmBase.class);
+        for (AlgorithmBase algo : loader) {
+            algoList.put(algo.getClass().getSimpleName(), algo);
         }
     }
 

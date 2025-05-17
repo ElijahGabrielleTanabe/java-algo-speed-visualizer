@@ -20,20 +20,31 @@ public abstract class AlgorithmBase
         this.computeTimes = new ArrayList<>();
     }
 
-    public <T extends Comparable<T>> void experiment(ArrayList<T> a, int sortSize)
+    public <T extends Comparable<T>> void experiment(ArrayList<T> sort, int sortSize)
     {
         System.out.println("Sorting on: " + this);
 
         Instant before = Instant.now();
         
         //# Run sort
-        this.sort(a);
+        this.sort(sort);
 
         Instant after = Instant.now();
         long delta = Duration.between(before, after).toMillis();
         
         this.computeTimes.add(delta);
         this.dataList.add(new XYChart.Data<>(Integer.toString(sortSize), delta));
+    }
+
+    protected <T extends Comparable<T>> void verifySort(ArrayList<T> sort)
+    {
+        for (int i = 0; i < sort.size() - 1; i++)
+        {
+            if (sort.get(i).compareTo(sort.get(i++)) > 0)
+            {
+                System.out.println("Unsorted array at " + this + ": " + sort);
+            }
+        }
     }
 
     protected abstract <T extends Comparable<T>> void sort(ArrayList<T> sort);

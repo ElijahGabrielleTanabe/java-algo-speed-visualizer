@@ -1,0 +1,51 @@
+.vbox {
+    -fx-border-style: hidden hidden hidden solid;
+    -fx-border-width: 1px;
+    -fx-border-color: #afafaf;
+    -fx-padding: 0px 3px 0px 3px;
+}
+
+.vbox .stat-title {
+    -fx-border-style: hidden hidden dashed hidden;
+    -fx-border-width: 1px;
+    -fx-border-color: #afafaf;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-box-border: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8px;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #909090;
+    -fx-background-insets: 2;
+    -fx-background-radius: 4;
+}
+
+.stats-container {
+    -fx-spacing: 8px;
+    -fx-padding: 4px 2px 0px 2px;
+}
+
+.stat-card {
+    -fx-background-color: white;
+    -fx-border-radius: 6px;
+    -fx-box-border: black;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0.2, 0, 1.5);
+    -fx-padding: 10px 0px 10px 0px;
+}
+
+.stat-card .label {
+    -fx-font-size: 12px;
+    -fx-font-family: "Lucida Console";
+    -fx-pref-width: 200px;
+    -fx-padding: 4px 0px 4px 8px;
+}

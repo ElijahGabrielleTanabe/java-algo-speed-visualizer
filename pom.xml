@@ -44,6 +44,18 @@
                             <mainClass>com.github.elijahgabrielletanabe.App</mainClass>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>jlink-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jlink</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.github.elijahgabrielletanabe.App</mainClass>
+                            <jlinkImageName>java-algo-speed-graph</jlinkImageName>
+                            <launcher>launch</launcher>
+                        </configuration>
+                    </execution>
                 </executions>
                 <configuration>
                     <launcher>launch</launcher>
