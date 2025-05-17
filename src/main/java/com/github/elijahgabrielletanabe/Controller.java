@@ -1,17 +1,11 @@
 package com.github.elijahgabrielletanabe;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.ServiceLoader;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -112,13 +106,16 @@ public class Controller implements Initializable
         Button button = (Button) event.getSource();
         button.setDisable(true);
 
-        ArrayList<Thread> spawnedThreads = new ArrayList<>();
-
         if (this.queueList.isEmpty())
         {
             button.setDisable(false);
             return;
         }
+
+        ArrayList<Thread> spawnedThreads = new ArrayList<>();
+        ArrayList<AlgorithmBase> currentQueueList = new ArrayList<>();
+
+        for (AlgorithmBase ab : this.queueList) { currentQueueList.add(ab); }
 
         Thread side = new Thread(() -> {
 
@@ -171,7 +168,7 @@ public class Controller implements Initializable
             System.out.println("\tReached!");
 
             Platform.runLater(() -> {
-                displayData();
+                displayData(currentQueueList);
                 button.setDisable(false);
             });
         });
@@ -179,14 +176,14 @@ public class Controller implements Initializable
         side.start();
     }
 
-    private void displayData()
+    private void displayData(ArrayList<AlgorithmBase> currentQueueList)
     {
         //# Clear all XYSeries on the chart
         this.lineChart.getData().clear();
         //# Clear all stats in stats panel
         this.statsContainer.getChildren().clear();
 
-        for (AlgorithmBase ab : queueList)
+        for (AlgorithmBase ab : currentQueueList)
         {
             //# Line Chart Data
             XYChart.Series<String, Long> cs = new XYChart.Series<>();
