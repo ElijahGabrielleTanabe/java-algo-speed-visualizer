@@ -138,11 +138,18 @@ public class Controller implements Initializable
                 {
                     //# Run experiment with worker thread
                     Thread t = new Thread(() -> {
-                        
+
+                        ArrayList<Integer> deepToSort = new ArrayList<>();
+
+                        for (int i = 0; i < toSort.size(); i++)
+                        {
+                            deepToSort.add(Integer.valueOf(toSort.get(i)));
+                        }
+
                         System.out.println("Executing task on: " + Thread.currentThread().getName());
 
                         //# Update later
-                        ab.experiment(toSort, sortSize);
+                        ab.experiment(deepToSort, sortSize);
                     });
 
                     t.start();
