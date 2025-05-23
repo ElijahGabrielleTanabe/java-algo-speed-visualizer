@@ -2,7 +2,7 @@
 
 As the name suggests, this is an algorithm (specifically sorting) speed visualizer in Java. This project uses Apache Maven as the build tool and JavaFX as the GUI with the help of Gluon's SceneBuilder. This project does not require the JDK or Apache Maven to be run. <br/> 
 
-Being new with Maven and JavaFX, this project came with **ALOT** of headaches (files paths, fx css properties, node customization, etc.) but it was still overall a fun and good learning experience that I would recommend to anyone getting into Java GUI applications.
+Being new with Maven and JavaFX, this project came with **ALOT** of headaches (file paths, fx css properties, THE LACK OF HOT RELOAD, etc.) but it was still overall a fun and good learning experience that I would recommend to anyone getting into Java GUI applications.
 
 ## How to run
 

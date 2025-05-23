@@ -45,6 +45,8 @@ public class QuickSort extends AlgorithmBase
                 sort.set(i, sort.get(j));
                 sort.set(j, temp);
             }
+
+            this.iterations++;
         }
 
         T swapTemp = sort.get(i + 1);

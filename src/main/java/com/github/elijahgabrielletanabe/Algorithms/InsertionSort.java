@@ -18,9 +18,12 @@ public class InsertionSort extends AlgorithmBase
         {
             T key = sort.get(i); 
             int j = i - 1;
-            while (j >= 0 && sort.get(j).compareTo(key) > 0) {
+
+            while (j >= 0 && sort.get(j).compareTo(key) > 0) 
+            {
                 sort.set(j + 1, sort.get(j));
                 j = j - 1;
+                this.iterations++;
             }
             sort.set(j + 1, key);
 
