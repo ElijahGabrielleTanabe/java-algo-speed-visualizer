@@ -20,6 +20,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
@@ -30,7 +31,7 @@ public class Controller implements Initializable
 {
     @FXML private LineChart<String, Long> lineChart;
     
-    @FXML private AnchorPane sortPanel;
+    @FXML private VBox sortPanel;
     @FXML private VBox statsPanel;
     @FXML private ScrollPane sortListContainer;
     @FXML private VBox statsContainer;
@@ -63,7 +64,7 @@ public class Controller implements Initializable
         this.statsPanel.getStylesheets().add(getFileByString("Stats.css", "css").toExternalForm());
 
         //# Apply Css classes
-        this.sortList.getStyleClass().add("vbox");
+        this.sortList.getStyleClass().add("sort-list");
         this.statsPanel.getStyleClass().add("vbox");
         this.statTitle.getStyleClass().add("stat-title");
         this.statsContainer.getStyleClass().add("stats-container");
@@ -72,10 +73,13 @@ public class Controller implements Initializable
         //# Load algorithms
         loadAlgorithms();
 
-        //# Populate SortList
+        //# SortList/Container settings
         VBox.setVgrow(sortListContainer, Priority.ALWAYS);
+        this.sortList.setPrefWidth(this.sortListContainer.getPrefWidth());
         this.sortList.setPrefHeight(Region.USE_COMPUTED_SIZE);
-
+        this.sortListContainer.setVbarPolicy(ScrollBarPolicy.NEVER);
+        
+        //# Populate SortList
         for (String key : algoList.keySet())
         {
             //# Set up Button

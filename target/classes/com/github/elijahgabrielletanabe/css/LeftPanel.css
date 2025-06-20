@@ -1,3 +1,13 @@
+.root {
+    -fx-font-family: "Lucida Console";
+}
+
+.label {
+    -fx-font-family: "Lucida Console";
+    -fx-font-size: 14px;
+    -fx-alignment: "CENTER";
+}
+
 .scroll-pane {
     -fx-background-color: transparent;
     -fx-box-border: transparent;
@@ -9,17 +19,13 @@
     -fx-padding: 5;
 }
 
-.scroll-pane .vbox {
+.sort-list {
     -fx-spacing: 6px;
+    -fx-alignment: "CENTER";
 }
 
 .scroll-pane .viewport {
     -fx-background-color: transparent;
-}
-
-.scroll-bar:vertical {
-    -fx-background-color: transparent;
-    -fx-pref-width: 8px;
 }
 
 .scroll-bar:vertical .thumb {
@@ -31,6 +37,8 @@
 .run-button {
     -fx-background-color: white;
     -fx-background-radius: 2px;
+    -fx-font-family: "Lucida Console";
+    -fx-font-size: 14px;
     -fx-border-radius: 2px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.2, 0, 1);
 }
