@@ -70,8 +70,13 @@ public class Controller implements Initializable
         this.statsContainer.getStyleClass().add("stats-container");
         this.runButton.getStyleClass().add("run-button");
 
-        //# Load algorithms
-        loadAlgorithms();
+        //# Find and load all algorithm files
+        ServiceLoader<AlgorithmBase> loader = ServiceLoader.load(AlgorithmBase.class);
+		
+        for (AlgorithmBase algo : loader) 
+		{
+            algoList.put(algo.getClass().getSimpleName(), algo);
+        }
 
         //# SortList/Container settings
         VBox.setVgrow(sortListContainer, Priority.ALWAYS);
@@ -105,7 +110,7 @@ public class Controller implements Initializable
 
     @FXML
     //For loops galore
-    public void runTest(MouseEvent event) throws InterruptedException 
+    public void runCalculations(MouseEvent event) throws InterruptedException 
     {
         Button button = (Button) event.getSource();
         button.setDisable(true);
@@ -118,7 +123,6 @@ public class Controller implements Initializable
 
         ArrayList<Thread> spawnedThreads = new ArrayList<>();
         ArrayList<AlgorithmBase> currentQueueList = new ArrayList<>();
-
         for (AlgorithmBase ab : this.queueList) { currentQueueList.add(ab); }
 
         Thread side = new Thread(() -> {
@@ -129,35 +133,36 @@ public class Controller implements Initializable
 
                 int sortSize = Integer.parseInt(s);
 
-                //# Generate array to sort
+                //# Generate int array to sort
                 ArrayList<Integer> toSort = new ArrayList<>();
-
                 for (int i = 0; i < sortSize; i++) { toSort.add(i); }
-
                 Collections.shuffle(toSort);
 
-                for (AlgorithmBase ab : this.queueList)
+                for (AlgorithmBase ab : currentQueueList)
                 {
-                    //# Run experiment with worker thread
-                    Thread t = new Thread(() -> {
-
-                        ArrayList<Integer> deepToSort = new ArrayList<>();
+                    //# Calculate with worker thread
+                    Thread calcThread = new Thread(() -> 
+					{
+						//# Create deep copy of sort list for each algo
+                        ArrayList<Integer> toSortDeepCopy = new ArrayList<>();
 
                         for (int i = 0; i < toSort.size(); i++)
                         {
-                            deepToSort.add(Integer.valueOf(toSort.get(i)));
+                            toSortDeepCopy.add(Integer.valueOf(toSort.get(i)));
                         }
 
-                        System.out.println("Executing task on: " + Thread.currentThread().getName());
+                        //System.out.println("Executing task on: " + Thread.currentThread().getName());
 
-                        //# Update later
-                        ab.experiment(deepToSort, sortSize);
+                        //# Run experiment
+                        ab.experiment(toSortDeepCopy, sortSize);
+						ab.verifySort(toSortDeepCopy);
                     });
 
-                    t.start();
-                    spawnedThreads.add(t);
+                    spawnedThreads.add(calcThread);
+					calcThread.start();
                 }
-
+				
+				//# Wait for all threads to finish
                 for (Thread thread : spawnedThreads)
                 {
                     try {
@@ -166,69 +171,70 @@ public class Controller implements Initializable
                         System.out.println("Interrupted Thread: " + thread.getName());
                     }
                 }
+				
                 spawnedThreads.clear();
             }
 
-            System.out.println("\tReached!");
+            System.out.println("\tFinished Calculations!");
 
-            Platform.runLater(() -> {
-                displayData(currentQueueList);
-                button.setDisable(false);
+            Platform.runLater(() -> 
+			{
+				//# Clear all XYSeries on the chart
+				this.lineChart.getData().clear();
+				//# Clear all stats in stats panel
+				this.statsContainer.getChildren().clear();
+
+				for (AlgorithmBase ab : currentQueueList)
+				{
+					//# Displaying data
+					displayLineChartData(ab);
+					displayStatPaneData(ab);
+
+					//# Cleaning up calculation data from ab
+					ab.cleanUp();
+				}
+				
+				button.setDisable(false);
             });
         });
 
         side.start();
     }
 
-    private void displayData(ArrayList<AlgorithmBase> currentQueueList)
+    private void displayLineChartData(AlgorithmBase ab)
     {
-        //# Clear all XYSeries on the chart
-        this.lineChart.getData().clear();
-        //# Clear all stats in stats panel
-        this.statsContainer.getChildren().clear();
+		//# Creating XYChart series to display on chart
+        XYChart.Series<String, Long> chartDataSeries = new XYChart.Series<>();
+		chartDataSeries.setName(ab.toString());
 
-        for (AlgorithmBase ab : currentQueueList)
-        {
-            //# Line Chart Data
-            XYChart.Series<String, Long> cs = new XYChart.Series<>();
-            cs.setName(ab.toString());
-
-            for (XYChart.Data<String, Long> cd : ab.getDataList())
-            {
-                cs.getData().add(new XYChart.Data<>(cd.getXValue(), cd.getYValue()));
-            }
-
-            ArrayList<Long> computeTimes = ab.getComputeTimes();
-            Collections.sort(computeTimes);
-
-            //# Stat Pane Data
-            VBox statCard = new VBox();
-            Label algorithm = new Label("Algorithm: " + ab.toString());
-            Label maxTime = new Label("Fastest: " + computeTimes.get(computeTimes.size() - 1).toString() + " ms");
-            Label minTime = new Label("Slowest: " + computeTimes.get(0).toString() + " ms");
-            Label iterations = new Label("Iterations: " + Integer.toString(ab.getIterations()));
-            Label timeComplexity = new Label("Complexity: " + ab.getTimeComplexity());
-
-            statCard.getStyleClass().add("stat-card");
-            statCard.getChildren().addAll(algorithm, maxTime, minTime, iterations, timeComplexity);
-            this.statsContainer.getChildren().add(statCard);
-
-            ab.clearDataList();
-            ab.clearComputeTimes();
-            ab.setIterations(0);
-
-            this.lineChart.getData().add(cs);
-        }
+		//# Populating series with data from ab
+		for (XYChart.Data<String, Long> cd : ab.getDataList())
+		{
+			chartDataSeries.getData().add(new XYChart.Data<>(cd.getXValue(), cd.getYValue()));
+		}
+		
+		this.lineChart.getData().add(chartDataSeries);
     }
-
-    public void loadAlgorithms()
-    {
-        //# Find all algorithm files
-        ServiceLoader<AlgorithmBase> loader = ServiceLoader.load(AlgorithmBase.class);
-        for (AlgorithmBase algo : loader) {
-            algoList.put(algo.getClass().getSimpleName(), algo);
-        }
-    }
+	
+	private void displayStatPaneData(AlgorithmBase ab)
+	{
+		ArrayList<Long> computeTimes = ab.getComputeTimes();
+		Collections.sort(computeTimes);
+		
+		//# Creating and populating stat card to display
+		VBox statCard = new VBox();
+		Label algorithm = new Label("Algorithm: " + ab.toString());
+		Label maxTime = new Label("Slowest: " + computeTimes.get(computeTimes.size() - 1).toString() + " ms");
+		Label minTime = new Label("Fastest: " + computeTimes.get(0).toString() + " ms");
+		Label iterations = new Label("Iterations: " + Integer.toString(ab.getIterations()));
+		Label timeComplexity = new Label("Complexity: " + ab.getTimeComplexity());
+		
+		// Stat card Css
+		statCard.getStyleClass().add("stat-card");
+		
+		statCard.getChildren().addAll(algorithm, maxTime, minTime, iterations, timeComplexity);
+		this.statsContainer.getChildren().add(statCard);
+	}
 
     private URL getFileByString(String path, String type)
     {

@@ -20,7 +20,7 @@ public abstract class AlgorithmBase
         this.computeTimes = new ArrayList<>();
     }
 
-    public <T extends Comparable<T>> void experiment(ArrayList<T> sort, int sortSize)
+    public <T extends Comparable<T>> void experiment (ArrayList<T> sort, int sortSize)
     {
         System.out.println("Sorting on: " + this);
 
@@ -36,7 +36,7 @@ public abstract class AlgorithmBase
         this.dataList.add(new XYChart.Data<>(Integer.toString(sortSize), delta));
     }
 
-    protected <T extends Comparable<T>> void verifySort(ArrayList<T> sort)
+    public <T extends Comparable<T>> void verifySort (ArrayList<T> sort)
     {
         for (int i = 0; i < sort.size() - 1; i++)
         {
@@ -47,17 +47,21 @@ public abstract class AlgorithmBase
         }
     }
 
-    protected abstract <T extends Comparable<T>> void sort(ArrayList<T> sort);
+    protected abstract <T extends Comparable<T>> void sort (ArrayList<T> sort);
 
     public ArrayList<XYChart.Data<String, Long>> getDataList() { return this.dataList; }
     public ArrayList<Long> getComputeTimes() { return this.computeTimes; }
     public int getIterations() { return this.iterations; }
     public String getTimeComplexity() { return this.timeComplexity; }
 
-    public void clearDataList() { this.dataList.clear(); }
-    public void clearComputeTimes() { this.computeTimes.clear(); }
-
     public void setIterations(int iterations) { this.iterations = iterations; }
+	
+	public void cleanUp()
+	{
+		this.dataList.clear();
+		this.computeTimes.clear();
+		setIterations(0);
+	}
 
     @Override
     public abstract String toString();

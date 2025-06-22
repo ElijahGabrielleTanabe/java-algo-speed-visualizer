@@ -22,12 +22,13 @@ public class SortButtonEvent implements EventHandler<ActionEvent>
     @Override
     public void handle(ActionEvent event)
     {
-        if (!(event.getSource() instanceof Button)) { throw new IllegalArgumentException("Not Button"); }
+        if (!(event.getSource() instanceof Button)) { throw new IllegalArgumentException("Not a Button"); }
         
         Button button = (Button) event.getSource();
 
         this.selected = !this.selected;
-
+		
+		//# Add or remove from queueList
         if (this.selected)
         {
             queueList.add(ab);

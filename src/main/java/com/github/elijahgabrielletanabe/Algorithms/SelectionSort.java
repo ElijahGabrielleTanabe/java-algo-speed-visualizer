@@ -34,8 +34,6 @@ public class SelectionSort extends AlgorithmBase
 
             this.iterations++;
         }
-
-        verifySort(sort);
     }
 
     @Override

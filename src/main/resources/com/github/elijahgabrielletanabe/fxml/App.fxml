@@ -56,7 +56,7 @@
             <VBox prefHeight="165.0" prefWidth="200.0" />
             <VBox alignment="CENTER" prefHeight="94.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="runButton" mnemonicParsing="false" onMousePressed="#runTest" prefHeight="37.0" prefWidth="98.0" text="Run" />
+                  <Button fx:id="runButton" mnemonicParsing="false" onMousePressed="#runCalculations" prefHeight="37.0" prefWidth="98.0" text="Run" />
                </children>
             </VBox>
          </children>

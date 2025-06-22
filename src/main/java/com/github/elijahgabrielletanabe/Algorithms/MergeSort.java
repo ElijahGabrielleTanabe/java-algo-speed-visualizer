@@ -15,8 +15,6 @@ public class MergeSort extends AlgorithmBase
     protected <T extends Comparable<T>> void sort(ArrayList<T> sort)
     {
         run(sort, sort.size());
-
-        verifySort(sort);
     }
 
     public <T extends Comparable<T>> void run(ArrayList<T> a, int n) 

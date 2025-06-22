@@ -37,8 +37,6 @@ public class BubbleSort extends AlgorithmBase
 
             this.iterations++;
         }
-
-        verifySort(sort);
     }
 
     @Override

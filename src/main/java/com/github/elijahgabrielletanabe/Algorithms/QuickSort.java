@@ -15,8 +15,6 @@ public class QuickSort extends AlgorithmBase
     protected <T extends Comparable<T>> void sort(ArrayList<T> sort)
     {
         sort(sort, 0, sort.size() - 1);
-
-        verifySort(sort);
     }
 
     public <T extends Comparable<T>> void sort(ArrayList<T> sort, int begin, int end) 

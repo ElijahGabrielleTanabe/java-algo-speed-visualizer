@@ -29,8 +29,6 @@ public class InsertionSort extends AlgorithmBase
 
             this.iterations++;
         }
-
-        verifySort(sort);
     }
 
     @Override
